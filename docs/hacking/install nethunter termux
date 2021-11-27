@@ -1,0 +1,18 @@
+**Requisitos**
+ - Celular con tarjeta SD
+ - descargar del playstore "nethunter kex"
+ - Termux instalado desde F-Droid
+
+**Pasos de descarga e instalación**
+ - Abrir Termux y ejecutar los siguiente comandos
+ - termux-setup-storage  Aceptar el mensaje de acceso a la memoria sd
+ -  cd ~/storage/external-1
+ - pkg install wget
+ - wget -O install-nethunter-termux https://offs.ec/2MceZWr
+ - bash install-nethunter-termux
+ **Acceso al equipo**
+  - Desde termux ejecutar los siguientes comandos
+ - nethunter passwd
+ - nethunter kex &
+Ir al escritorio y abrir nethunter kex
+Pon la contraseña que definiste en kex y dale en connnect
