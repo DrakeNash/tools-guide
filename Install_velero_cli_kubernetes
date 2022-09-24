@@ -1,0 +1,37 @@
+# Prerequisites
+
+Before you begin this tutorial, you should have the following available to you:
+
+On the kubernetes environment:
+
+    The kubectl command-line tool, configured to connect to your cluster. You can read more about installing and configuring kubectl in the official Kubernetes documentation.
+    The git command-line utility. You can learn how to install git in Getting Started with Git.
+
+Check the Velero compatibility matrix:
+
+    Velero compatibility matrix
+    Validate the version of kubernetes with the velero versión and aws plugin
+
+## Step 1 — Installing the Velero Client
+
+The Velero backup tool consists of a client installed on your local computer and a server that runs in your Kubernetes cluster. To begin, we’ll install the local Velero client.
+
+In your web browser, navigate to the Velero GitHub repo releases page, find the release corresponding to your OS and system architecture, and copy the link address.
+
+Then, from the command line on your local computer, navigate to the temporary /tmp directory and cd into it:
+
+    cd /tmp
+
+Use wget and the link you copied earlier to download the release tarball:
+
+    wget https://link_copied_from_release_page
+
+Once the download completes, extract the tarball using tar (note the filename may differ depending on the release version and your OS):
+
+    tar -xvzf velero-v1.2.0-linux-amd64.tar.gz
+
+The /tmp directory should now contain the extracted velero-v1.2.0-linux-amd64 directory as well as the tarball you just downloaded.
+
+Verify that you can run the velero client by executing the binary:
+
+    ./velero-v1.2.0-linux-amd64/velero help
