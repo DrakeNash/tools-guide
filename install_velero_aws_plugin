@@ -1,0 +1,105 @@
+Velero installation and configuration
+Prerequisitos
+•	Installing HELM
+•	AWS Credentials
+•	Bucket created in S3
+•	https://hub.docker.com/r/velero/velero-plugin-for-aws/tags to take out the last stable tag
+Installation
+•	helm repo add vmware-tanzu https://vmware-tanzu.github.io/helm-charts
+•	Copy to server as values-sailboat.yml
+•	image:
+•	  repository: sailboat/sailboat
+•	  tag: v1.9.1
+•	  pullPolicy: IfNotPresent
+•	
+•	# Resource requests/limits to specify for the Velero deployment.
+•	# https://velero.io/docs/v1.6/customize-installation/#customize-resource-requests-and-limits
+•	resources:
+•	  requests:
+•	    cpu: 500m
+•	    memory: 128Mi
+•	  limits:
+•	    cpu: 1000m
+•	    memory: 512Mi
+•	
+•	configuration:
+•	  provider: aws
+•	  backupStorageLocation:
+•	    name: $name_backup_storage
+•	    provider: velero.io/aws
+•	    bucket: $name_bucket_aws
+•	    prefix: $enviroment_prefix
+•	    # default indicates this location is the default backup storage location. Optional.
+•	  default: true
+•	  accessMode: ReadWrite
+•	  config:
+•	    region: $aws_bucket_region
+•	volumeSnapshotLocation:
+•	  name: $name_backup_storage
+•	  config:
+•	    region: $aws_bucket_region
+•	
+•	credentials:
+•	  cloud: |
+•	      [default]
+•	      aws_access_key_id=xxxxxx
+•	      aws_secret_access_key=xxxxxxx
+•	backupsEnabled: true
+•	snapshotsEnabled: true
+•	initContainers:
+•	  - name: velero-plugin-for-aws
+•	    image: velero/velero-plugin-for-aws:v1.5.0
+•	    imagePullPolicy: IfNotPresent
+•	    volumeMounts:
+•	      - mountPath: /target
+        name: plugins
+•	helm install -f values.yml velero vmware-tanzu/sailboat -n velero
+•	kubectl get secrets -n velero
+•	Enter https://www.base64encode.org/
+•	in the portal add the following format for credentials: 
+•	[default]
+•	  aws_access_key_id = xxxxxx
+    aws_secret_access_key = xxxx
+•	Copy the encoding
+•	Kubectl edit secrets -n velero
+•	Change cloud data: for the generated
+Configure snapshoot default
+•	kubectl edit deployment -n velero
+•	modify with the next model
+•	spec:
+•	      containers:
+•	      - args:
+•	        - server
+•	        - --features=
+•	        command:
+•	        - /velero
+•	        - --default-volume-snapshot-locations
+        - aws: aws
+Configure backupStorageLocation default
+•	Get the name of the available storages
+kubectl get BackupStorageLocation -n velero
+•	Edit available storage
+kubectl edit BackupStorageLocation -n velero $nombre_storage
+•	Configure the spec as follows: 
+•	spec:
+•	  accessMode: ReadWrite
+•	  default: true
+•	  objectStorage:
+•	    bucket: $name_bucket_aws
+•	    prefix: $enviroment_prefix
+  provider: velero.io/aws
+•	Add 
+•	Save and restart the pod
+Basic commands 
+•	Create Backup
+velero backup create $namespace_name-backup --include-namespaces $namespace
+•	List backups
+velero backup get
+•	View details of a Backup
+velero backup describe $namespace_name-backup --details
+•	Create the backup-location 
+velero backup-location create $name_folder --provider aws --bucket $name_bucket_aws
+•	Review process logs
+velero backup logs $namespace_name-backup
+•	Delete a backup-location
+kubectl -n velero delete backupstoragelocation name_folder
